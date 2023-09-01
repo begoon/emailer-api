@@ -59,4 +59,4 @@ if (mode === "POST") {
     result = await fetch(url, { headers });
 }
 
-console.log(result);
+console.log(result.status);
