@@ -1,16 +1,18 @@
 import { env } from "$env/dynamic/private";
-import { error, type Handle } from "@sveltejs/kit";
+import { error, redirect, type Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
     const { request, cookies, locals } = event;
 
     const url = new URL(request.url);
     const user = cookies.get("teapot") || request.headers.get("teapot");
-    console.log("REQUEST", url.pathname, user || "(*)");
+    console.log("REQUEST", request.method, url.pathname, user || "(*)");
 
     if (user !== env.TEAPOT) {
         throw error(418);
     }
+
+    if (url.pathname === "/") throw redirect(303, "/swagger.html");
 
     const started = performance.now();
 

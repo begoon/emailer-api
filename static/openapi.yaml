@@ -1,0 +1,153 @@
+openapi: 3.0.0
+info:
+  title: Emailer API
+  description: API to simplify sending emails.
+  version: 0.0.2
+tags:
+  - name: email
+    description: Send emails
+paths:
+  /api/email/{to}/{subject}/{text}:
+    get:
+      tags: [email]
+      summary: Send an email
+      description: Send an email without attachments
+      operationId: sendEmail
+      parameters:
+        - name: to
+          in: path
+          description: Recipient email
+          required: true
+          schema:
+            type: string
+            format: email
+          example: test@example.com
+        - name: subject
+          in: path
+          description: Subject
+          required: true
+          schema:
+            type: string
+          example: "The subject of the email"
+        - name: text
+          in: path
+          description: Email content
+          required: true
+          schema:
+            type: string
+          example: "The content of the email."
+        - name: prefix
+          in: query
+          description: Email prefix (after "+")
+          required: false
+          example: "suffix"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+        '418':
+          description: I'm a teapot
+  /api/email:
+    post:
+      tags: [email]
+      summary: Send an email
+      description: Send an email with attachments
+      operationId: sendEmailWithAttachments
+      requestBody:
+        description: Email fields
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+        '418':
+          description: I'm a teapot
+components:
+  schemas:
+    Email:
+      type: object
+      required:
+        - to
+        - subject
+        - text
+      properties:
+        prefix:
+          type: string
+          example: suffix
+        to:
+          type: string
+          format: email
+          example: test@example.com
+        subject:
+          type: string
+          example: "The subject of the email"
+        text:
+          type: string
+          example: "The content of the email."
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+    Attachment:
+      type: object
+      required:
+        - content
+        - filename
+        - contentType
+        - encoding
+      properties:
+        content: 
+          type: string
+          example: iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNk+M9Qz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC
+        filename:
+          type: string
+          example: "image.png"
+        contentType:
+          type: string
+          enum:
+            - image/png
+            - image/jpeg
+            - image/jpg
+            - image/gif
+            - application/json
+        encoding:
+          type: string
+          enum:
+            - base64
+            - raw
+      example:
+        content: iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNk+M9Qz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC
+        filename: "image.png"
+        contentType: image/png
+        encoding: base64
+  requestBodies:
+    Email:
+      description: Email fields
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Email'
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      in: header
+      name: teapot
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: teapot
+security:
+  - HeaderAuth: []
+    CookieAuth: []
