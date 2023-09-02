@@ -34,6 +34,7 @@ export async function send(email: Email): Promise<string> {
     };
     console.log("send", {
         ...parcel,
+        html: parcel.html?.slice(0, 100) + "...",
         attachments: parcel.attachments?.map((a) => ({
             ...a,
             content: (<string>a.content).slice(0, 100) + "...",
